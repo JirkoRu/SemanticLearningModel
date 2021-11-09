@@ -11,15 +11,15 @@ n_features = 6
 n_classes = 4
 
 # a dictionary of indices of present features in each class
-class_index_dict = {"a1_b1": (0, 2), "a1_b2": (0, 3),
-                    "a2_c1": (1, 4), "a2_c2": (1, 5)
-                    }
+class_index_dict_classic = {"a1_b1": (0, 2), "a1_b2": (0, 3),
+                            "a2_c1": (1, 4), "a2_c2": (1, 5)
+                            }
 
 # hyper parameters
-input_size = n_features
+input_size = n_classes
 hidden_size = 80
-output_size = n_classes
-n_epochs = 100
+output_size = n_features
+n_epochs = 200
 batch_size = 20
 learning_rate = 0.0001
 
@@ -45,7 +45,9 @@ def generate_dataset(n_examples, n_features, n_classes, class_index_dict):
     y = F.one_hot(y.to(torch.int64), num_classes=4)
     y = y.to(torch.float32)
     x = x.t()
-    return x, y
+    labels = y
+    features = x
+    return features, labels
 
 
 # load the x inputs and y labels into a simple pytorch Dataset, for data loading
@@ -78,11 +80,13 @@ class FullyConnected(nn.Module):
         return F.log_softmax(out)
 
 
-x_train, y_train = generate_dataset(n_examples, n_features, n_classes, class_index_dict)
-train_set = CustomDataset(input_tensors=(x_train, y_train))
+# we generate the dataset, to change prediction from features to class just change the two terms x_train, y_train
+features, labels = generate_dataset(n_examples, n_features, n_classes, class_index_dict_classic)
+train_set = CustomDataset(input_tensors=(labels, features))
 train_loader = DataLoader(train_set,
                           batch_size=batch_size,
                           shuffle=True)
+
 
 
 # creat instance of network class
