@@ -11,18 +11,18 @@ n_examples = 200     # n_examples should be divisible by n_classes
 n_features = 6
 n_classes = 4
 
-# a dictionary of indices of present features in each class
-class_index_dict = {"a1_b1": (0, 2), "a1_b2": (0, 3),
-                            "a2_c1": (1, 4), "a2_c2": (1, 5)
-                            }
-
-# hyper parameters
+# hyperparameters
 input_size = n_classes
 hidden_size = 100
 output_size = n_features
 n_epochs = 80
 batch_size = 10
 learning_rate = 0.01
+
+# a dictionary of indices of present features in each class
+class_index_dict = {"a1_b1": (0, 2), "a1_b2": (0, 3),
+                    "a2_c1": (1, 4), "a2_c2": (1, 5)
+                    }
 
 
 class DatasetGenerator():
@@ -139,7 +139,8 @@ if __name__ == "__main__":
                 print("Epoch[{}/{}], Loss: {:.4f}, Accuracy: {} %".format(epoch+1, n_epochs,
                                                                  loss.item(),
                                                                  (100 * correct / len(train_set))))
-
+    plt.plot(np.linspace(0, n_epochs, n_epochs), loss_history)
+    plt.show()
 
 
 

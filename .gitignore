@@ -3,3 +3,4 @@
 Lib/
 Scripts/
 /enviro
+__pycache__/
