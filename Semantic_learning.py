@@ -13,9 +13,9 @@ n_classes = 4
 
 # hyperparameters
 input_size = n_classes
-hidden_size = 100
+hidden_size = 60
 output_size = n_features
-n_epochs = 80
+n_epochs = 100
 batch_size = 10
 learning_rate = 0.01
 
@@ -80,14 +80,17 @@ class FullyConnected(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super(FullyConnected, self).__init__()
         self.fully_con1 = nn.Linear(input_size, hidden_size)
-        self.relu = nn.ReLU()
+        torch.nn.init.normal_(self.fully_con1.weight, mean=0, std=0.0002/input_size)
+        # self.relu = nn.ReLU()
         self.fully_con2 = nn.Linear(hidden_size, output_size)
+        torch.nn.init.normal_(self.fully_con2.weight, mean=0, std=0.0002/output_size)
 
     def forward(self, x):
         x = self.fully_con1(x)
-        x = self.relu(x)
+        # x = self.relu(x)
         out = self.fully_con2(x)
-        return out
+        hidden_act = x
+        return hidden_act, out
 
 
 if __name__ == "__main__":
@@ -120,7 +123,7 @@ if __name__ == "__main__":
             x, y = data
 
             # first forward pass
-            out = network(x)
+            hidden_act, out = network(x)
 
             loss = loss_func(out, y)
 

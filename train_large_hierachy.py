@@ -8,16 +8,17 @@ import torch.optim as optim
 from SemanticLearningModel.Semantic_learning import DatasetGenerator, CustomDataset, FullyConnected
 
 
-# inputs and hyperparams for dataset containing a3 and a4 as additional hierarchical nodes
+# values for dataset containing a3 and a4 as additional higher nodes
+
 n_examples = 400    # n_examples should be divisible by n_classes
 n_features = 8
 n_classes = 8
 
 # hyperparameters
 input_size = n_classes
-hidden_size = 100
+hidden_size = 50
 output_size = n_features
-n_epochs = 80
+n_epochs = 800
 batch_size = 10
 learning_rate = 0.01
 
@@ -52,7 +53,7 @@ if __name__ == "__main__":
 
 
     # test data
-    test_data_generator = DatasetGenerator(int(n_examples/2),
+    test_data_generator = DatasetGenerator(n_examples,
                                            n_features,
                                            n_classes,
                                            class_index_dict_large
@@ -90,7 +91,7 @@ if __name__ == "__main__":
             x_train, y_train = data
 
             # first forward pass
-            out = network(x_train)
+            hidden_act, out = network(x_train)
 
             # compute loss
             loss = loss_func(out, y_train)
@@ -113,7 +114,7 @@ if __name__ == "__main__":
                 x_test, y_test = data
 
                 # first forward pass
-                out_test = network(x_test)
+                hidden_act, out_test = network(x_test)
                 loss_test = loss_func(out_test, y_test)
                 running_loss_test += loss_test.item()
 
@@ -130,8 +131,14 @@ if __name__ == "__main__":
                                                                   (100 * correct / len(train_set))))
         print("Epoch[{}/{}],Test Loss: {:.4f}".format(epoch+1, n_epochs, epoch_test_loss))
 
+    # save the model weights
+    torch.save(network.state_dict(), "linear_small_weights.pt")
 
-    plt.plot(np.linspace(0, n_epochs, n_epochs), loss_history_train)
-    plt.plot(np.linspace(0, n_epochs, n_epochs), loss_history_test)
+    plt.plot(np.linspace(0, n_epochs, n_epochs), loss_history_train, label="train loss")
+    plt.plot(np.linspace(0, n_epochs, n_epochs), loss_history_test, label="test loss")
+    plt.xlabel("Epochs")
+    plt.ylabel("Mean squared error")
+    plt.legend()
     plt.show()
+    plt.savefig("figures/loss_semantic_learning_linear.png")
 
