@@ -16,7 +16,7 @@ n_classes = 8
 
 # hyperparameters
 input_size = n_classes
-hidden_size = 50
+hidden_size = 100
 output_size = n_features
 n_epochs = 800
 batch_size = 10
@@ -132,7 +132,7 @@ if __name__ == "__main__":
         print("Epoch[{}/{}],Test Loss: {:.4f}".format(epoch+1, n_epochs, epoch_test_loss))
 
     # save the model weights
-    torch.save(network.state_dict(), "linear_small_weights.pt")
+    torch.save(network.state_dict(), "linear_small_weights_100hidden.pt")
 
     plt.plot(np.linspace(0, n_epochs, n_epochs), loss_history_train, label="train loss")
     plt.plot(np.linspace(0, n_epochs, n_epochs), loss_history_test, label="test loss")
@@ -140,5 +140,5 @@ if __name__ == "__main__":
     plt.ylabel("Mean squared error")
     plt.legend()
     plt.show()
-    plt.savefig("figures/loss_semantic_learning_linear.png")
+    plt.savefig("figures/loss_semantic_learning_linear_100hidden.png")
 

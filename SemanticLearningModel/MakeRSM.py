@@ -17,7 +17,7 @@ n_classes = 8
 
 # hyperparameters
 input_size = n_classes
-hidden_size = 50
+hidden_size = 100
 output_size = n_features
 batch_size = 8
 
@@ -60,9 +60,8 @@ if __name__ == "__main__":
                              )
 
     # load weights
-    network.load_state_dict(torch.load(("/Users/jirkorubruck/PycharmProjects/"
-                                       "SemanticLearningModel/SemanticLearningModel/"
-                                       "saved_weights/linear_small_weights.pt")))
+    network.load_state_dict(torch.load(("C:/Users/Jirko/PycharmProjects/SemanticLearningModel/"
+                                        "SemanticLearningModel/saved_weights/linear_small_weights_100hidden.pt")))
 
     # make predictions
     with torch.no_grad():
