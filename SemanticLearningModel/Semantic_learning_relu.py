@@ -5,29 +5,43 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from Semantic_learning import DatasetGenerator, CustomDataset, FullyConnected
+from Semantic_learning import DatasetGenerator, CustomDataset
 
-
-# values for dataset containing a3 and a4 as additional higher nodes
-
-n_examples = 400    # n_examples should be divisible by n_classes
-n_features = 8
-n_classes = 8
+# task specific parameters
+n_examples = 4     # n_examples should be divisible by n_classes
+n_features = 6
+n_classes = 4
 
 # hyperparameters
 input_size = n_classes
-hidden_size = 100
+hidden_size = 16
 output_size = n_features
-n_epochs = 800
-batch_size = 10
-learning_rate = 0.01
+n_epochs = 400
+batch_size = 4
+learning_rate = 1/n_examples
 
+# a dictionary of indices of present features in each class
+class_index_dict = {"a1_b1": (0, 2), "a1_b2": (0, 3),
+                    "a2_c1": (1, 4), "a2_c2": (1, 5)
+                    }
 
-class_index_dict_large = {"a1_b1": (0, 4), "a1_b2": (0, 5),
-                          "a2_c1": (1, 6), "a2_c2": (1, 7),
-                          "a3_b1": (2, 4), "a3_b2": (2, 5),
-                          "a4_c1": (3, 6), "a4_c2": (3, 7)
-                          }
+                
+# define our model class
+class FullyConnected(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(FullyConnected, self).__init__()
+        self.fully_con1 = nn.Linear(input_size, hidden_size)
+        torch.nn.init.normal_(self.fully_con1.weight, mean=0, std=0.0001/input_size)
+        self.relu = nn.ReLU()
+        self.fully_con2 = nn.Linear(hidden_size, output_size)
+        torch.nn.init.normal_(self.fully_con2.weight, mean=0, std=0.0001/output_size)
+
+    def forward(self, x):
+        x = self.fully_con1(x)
+        x = self.relu(x)
+        out = self.fully_con2(x)
+        hidden_act = x
+        return hidden_act, out
 
 
 if __name__ == "__main__":
@@ -40,7 +54,7 @@ if __name__ == "__main__":
     train_data_generator = DatasetGenerator(n_examples,
                                             n_features,
                                             n_classes,
-                                            class_index_dict_large
+                                            class_index_dict
                                             )
 
     train_features, train_labels = train_data_generator.generate_dataset()
@@ -56,7 +70,7 @@ if __name__ == "__main__":
     test_data_generator = DatasetGenerator(n_examples,
                                            n_features,
                                            n_classes,
-                                           class_index_dict_large
+                                           class_index_dict
                                            )
 
     test_features, test_labels = test_data_generator.generate_dataset()
@@ -141,4 +155,3 @@ if __name__ == "__main__":
     plt.legend()
     plt.show()
     plt.savefig("figures/loss_semantic_learning_relu_16hidden.png")
-

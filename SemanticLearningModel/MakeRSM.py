@@ -5,8 +5,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from SemanticLearningModel.Semantic_learning import DatasetGenerator, CustomDataset, FullyConnected
-from SemanticLearningModel.train_large_hierachy import class_index_dict_large
+from Semantic_learning import DatasetGenerator, CustomDataset, FullyConnected
+from train_large_hierachy import class_index_dict_large
 
 
 # values for dataset containing a3 and a4 as additional higher nodes

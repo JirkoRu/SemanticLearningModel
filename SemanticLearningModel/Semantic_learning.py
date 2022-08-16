@@ -7,17 +7,17 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 # task specific parameters
-n_examples = 200     # n_examples should be divisible by n_classes
+n_examples = 4     # n_examples should be divisible by n_classes
 n_features = 6
 n_classes = 4
 
 # hyperparameters
 input_size = n_classes
-hidden_size = 60
+hidden_size = 16
 output_size = n_features
-n_epochs = 100
-batch_size = 10
-learning_rate = 0.01
+n_epochs = 400
+batch_size = 4
+learning_rate = 1/n_examples
 
 # a dictionary of indices of present features in each class
 class_index_dict = {"a1_b1": (0, 2), "a1_b2": (0, 3),
@@ -50,8 +50,8 @@ class DatasetGenerator():
             lower_col_idx = count * self.n_per_class
             higher_col_idx = lower_col_idx + self.n_per_class
 
-            self.features[value[0], lower_col_idx: higher_col_idx] = 1
-            self.features[value[1], lower_col_idx: higher_col_idx] = 1
+            self.features[value[0], lower_col_idx: higher_col_idx] = 1 * (0.7) *4
+            self.features[value[1], lower_col_idx: higher_col_idx] = 1 * (0.7) *4
             self.labels[lower_col_idx: higher_col_idx] = count
 
         self.labels = F.one_hot(self.labels.to(torch.int64), num_classes=self.n_classes)
@@ -80,10 +80,10 @@ class FullyConnected(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super(FullyConnected, self).__init__()
         self.fully_con1 = nn.Linear(input_size, hidden_size)
-        torch.nn.init.normal_(self.fully_con1.weight, mean=0, std=0.0002/input_size)
+        torch.nn.init.normal_(self.fully_con1.weight, mean=0, std=0.0001/input_size)
         # self.relu = nn.ReLU()
         self.fully_con2 = nn.Linear(hidden_size, output_size)
-        torch.nn.init.normal_(self.fully_con2.weight, mean=0, std=0.0002/output_size)
+        torch.nn.init.normal_(self.fully_con2.weight, mean=0, std=0.0001/output_size)
 
     def forward(self, x):
         x = self.fully_con1(x)
