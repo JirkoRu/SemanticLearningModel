@@ -1,4 +1,4 @@
-from audioop import bias
+from importlib import import_module
 from matplotlib import pyplot as plt
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
@@ -6,10 +6,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from Semantic_learning import DatasetGenerator, CustomDataset
+from Semantic_learning import initialize_weights, DatasetGenerator, CustomDataset, FullyConnected
 import os
 
 dname = os.getcwd() + "/PycharmProjects/SemanticLearningModel/SemanticLearningModel/"
+
 # task specific parameters
 n_examples = 4     # n_examples should be divisible by n_classes
 n_features = 7
@@ -27,52 +28,21 @@ learning_rate = 1/n_examples
 class_index_dict = {"a1_b1": (0, 1, 3), "a1_b2": (0, 1, 4),
                     "a2_c1": (0, 2, 5), "a2_c2": (0, 2, 6)
                     }
-                
-# define our model class
-class FullyConnected(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
-        super(FullyConnected, self).__init__()
-
-        self.fully_con1 = nn.Linear(input_size, hidden_size)
-        torch.nn.init.normal_(self.fully_con1.weight, mean=0, std=0.0001/input_size)
-        torch.nn.init.normal_(self.fully_con1.bias, mean=0, std=0.0001/input_size)
-
-        self.relu = nn.ReLU()
-
-        self.fully_con2 = nn.Linear(hidden_size, output_size)
-        torch.nn.init.normal_(self.fully_con2.weight, mean=0, std=0.0001/output_size)
-        torch.nn.init.normal_(self.fully_con2.bias, mean=0, std=0.0001/output_size)
-
-    def forward(self, x):
-        x = self.fully_con1(x)
-        x = self.relu(x)
-        out = self.fully_con2(x)
-        hidden_act = x
-        return hidden_act, out
 
 
 if __name__ == "__main__":
 
     """
     we generate first a general and then a pytorch specific dataset, to feed it to our dataloader
-    first training set and then test set
+    to change prediction from features to class just swap the two terms: labels, features
     """
     # train data
-    train_data_generator = DatasetGenerator(n_examples,
-                                            n_features,
-                                            n_classes,
-                                            class_index_dict
-                                            )
-
-    train_features, train_labels = train_data_generator.generate_dataset()
-    train_set = CustomDataset(input_tensors=(train_labels, train_features))
-
+    data_generator = DatasetGenerator(n_examples, n_features, n_classes, class_index_dict)
+    features, labels = data_generator.generate_dataset()
+    train_set = CustomDataset(input_tensors=(labels, features))
     train_loader = DataLoader(train_set,
                               batch_size=batch_size,
-                              shuffle=True
-                              )
-
-
+                              shuffle=True)
     # test data
     test_data_generator = DatasetGenerator(n_examples,
                                            n_features,
@@ -90,21 +60,21 @@ if __name__ == "__main__":
     """
     define the network, loss-function, and optimiser
     """
-    network = FullyConnected(input_size,
-                             hidden_size,
-                             output_size)
-
+    network = FullyConnected(input_size, hidden_size, output_size)
+    # network.apply(initialize_weights)
     print(network)
 
     loss_func = nn.MSELoss()
     optimiser = optim.SGD(network.parameters(), lr=learning_rate)
 
-    # let's train
+    # lets train
+    # make a history of losses
     loss_history_train = []
 
     # save the inputs and outputs in a list
     inputs  = np.full([n_classes, n_classes, n_epochs], np.nan)
     outputs = np.full([n_classes, n_features, n_epochs], np.nan)
+
 
     for epoch in range(n_epochs):
         correct = 0
@@ -136,7 +106,6 @@ if __name__ == "__main__":
             inputs[:, :, epoch] = x_train.detach().numpy()
             outputs[:,:, epoch] = out.detach().numpy()
 
-
         with torch.no_grad():
             for i, data in enumerate(test_loader):
                 x_test, y_test = data
@@ -154,13 +123,12 @@ if __name__ == "__main__":
                                                                   epoch_train_loss,
                                                                   (100 * correct / len(train_set))))
 
-
     # save the input output matrices
-    np.save(dname + "saved_input-outputs/relu_small_weights_16hidden_inputs.npy", inputs)
-    np.save(dname + "saved_input-outputs/relu_small_weights_16hidden_outputs.npy", outputs)
+    # np.save(dname + "saved_input-outputs/linear_small_weights_16hidden_inputs.npy", inputs)
+    # np.save(dname + "saved_input-outputs/linear_small_weights_16hidden_outputs.npy", outputs)
 
     # save the model weights
-    torch.save(network.state_dict(), dname + "saved_weights/relu_small_weights_16hidden.pt")
+    #torch.save(network.state_dict(), dname + "saved_weights/relu_small_weights_16hidden.pt")
 
     # little plotty plot
     plt.plot(np.linspace(0, n_epochs, n_epochs), loss_history_train, label="train loss")
@@ -168,4 +136,5 @@ if __name__ == "__main__":
     plt.ylabel("Mean squared error")
     plt.legend()
     plt.show()
-    plt.savefig(dname + "figures/loss_semantic_learning_relu_16hidden.png")
+    plt.savefig(dname + "figures/loss_semantic_learning_linear_16hidden.svg")
+

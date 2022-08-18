@@ -19,7 +19,7 @@ n_classes = 4
 input_size = n_classes
 hidden_size = 16
 output_size = n_features
-n_epochs = 400
+n_epochs = 800
 batch_size = 4
 learning_rate = 1/n_examples
 
@@ -54,9 +54,9 @@ class DatasetGenerator():
             lower_col_idx = count * self.n_per_class
             higher_col_idx = lower_col_idx + self.n_per_class
 
-            self.features[value[0], lower_col_idx: higher_col_idx] = 1 * (0.7) *4
-            self.features[value[1], lower_col_idx: higher_col_idx] = 1 * (0.7) *4
-            self.features[value[2], lower_col_idx: higher_col_idx] = 1 * (0.7) *4
+            self.features[value[0], lower_col_idx: higher_col_idx] = 1 # * (0.7) *4
+            self.features[value[1], lower_col_idx: higher_col_idx] = 1 # * (0.7) *4
+            self.features[value[2], lower_col_idx: higher_col_idx] = 1 # * (0.7) *4
             self.labels[lower_col_idx: higher_col_idx] = count
 
         self.labels = F.one_hot(self.labels.to(torch.int64), num_classes=self.n_classes)
@@ -79,6 +79,12 @@ class CustomDataset(Dataset):
     def __len__(self):
         return self.input_tensors[0].size(0)
 
+# lets make an additional function to initialise weights post hoc
+std = 1
+def initialize_weights(m):
+    if isinstance(m, nn.Linear):
+        nn.init.normal_(m.weight, mean=0, std=std/input_size)
+        nn.init.normal_(m.bias.data, mean=0, std=std/output_size)
 
 # define our model class
 class FullyConnected(nn.Module):
@@ -101,7 +107,6 @@ class FullyConnected(nn.Module):
         out = self.fully_con2(x)
         hidden_act = x
         return hidden_act, out
-
 
 if __name__ == "__main__":
 
@@ -134,6 +139,7 @@ if __name__ == "__main__":
     define the network, loss-function, and optimiser
     """
     network = FullyConnected(input_size, hidden_size, output_size)
+    # network.apply(initialize_weights)
     print(network)
 
     loss_func = nn.MSELoss()
@@ -144,8 +150,8 @@ if __name__ == "__main__":
     loss_history_train = []
 
     # save the inputs and outputs in a list
-    inputs  = np.full([4, 4, n_epochs], np.nan)
-    outputs = np.full([4, 7, n_epochs], np.nan)
+    inputs  = np.full([n_classes, n_classes, n_epochs], np.nan)
+    outputs = np.full([n_classes, n_features, n_epochs], np.nan)
 
 
     for epoch in range(n_epochs):
@@ -196,10 +202,11 @@ if __name__ == "__main__":
                                                                   (100 * correct / len(train_set))))
 
     # save the input output matrices
+    # np.save(dname + "saved_input-outputs/linear_small_weights_16hidden_inputs.npy", inputs)
+    # np.save(dname + "saved_input-outputs/linear_small_weights_16hidden_outputs.npy", outputs)
 
-    
     # save the model weights
-    torch.save(network.state_dict(), dname + "saved_weights/relu_small_weights_16hidden.pt")
+    #torch.save(network.state_dict(), dname + "saved_weights/relu_small_weights_16hidden.pt")
 
     # little plotty plot
     plt.plot(np.linspace(0, n_epochs, n_epochs), loss_history_train, label="train loss")
@@ -207,7 +214,7 @@ if __name__ == "__main__":
     plt.ylabel("Mean squared error")
     plt.legend()
     plt.show()
-    plt.savefig(dname + "figures/loss_semantic_learning_linear_16hidden.png")
+    plt.savefig(dname + "figures/loss_semantic_learning_linear_16hidden.svg")
 
 
 
