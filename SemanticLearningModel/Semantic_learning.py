@@ -79,13 +79,6 @@ class CustomDataset(Dataset):
     def __len__(self):
         return self.input_tensors[0].size(0)
 
-# lets make an additional function to initialise weights post hoc
-std = 1
-def initialize_weights(m):
-    if isinstance(m, nn.Linear):
-        nn.init.normal_(m.weight, mean=0, std=std/input_size)
-        nn.init.normal_(m.bias.data, mean=0, std=std/output_size)
-
 # define our model class
 class FullyConnected(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
@@ -98,8 +91,8 @@ class FullyConnected(nn.Module):
         # self.relu = nn.ReLU()
 
         self.fully_con2 = nn.Linear(hidden_size, output_size)
-        torch.nn.init.normal_(self.fully_con2.weight, mean=0, std=0.0001/output_size)
-        torch.nn.init.normal_(self.fully_con2.bias, mean=0, std=0.0001/output_size)
+        torch.nn.init.normal_(self.fully_con2.weight, mean=0, std=.0001/output_size)
+        torch.nn.init.normal_(self.fully_con2.bias, mean=0, std=.0001/output_size)
 
     def forward(self, x):
         x = self.fully_con1(x)
@@ -107,6 +100,13 @@ class FullyConnected(nn.Module):
         out = self.fully_con2(x)
         hidden_act = x
         return hidden_act, out
+
+# lets make an additional function to initialise weights post hoc
+std = 1
+def initialize_weights(m):
+    if isinstance(m, nn.Linear):
+        nn.init.normal_(m.weight, mean=0, std=std/input_size)
+        nn.init.normal_(m.bias.data, mean=0, std=std/output_size)
 
 if __name__ == "__main__":
 
