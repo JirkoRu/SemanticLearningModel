@@ -8,7 +8,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import os
 
-dname = os.getcwd() + "/PycharmProjects/SemanticLearningModel/SemanticLearningModel/"
+dname = os.getcwd()
 
 # task specific parameters
 n_examples = 4     # n_examples should be divisible by n_classes
@@ -206,7 +206,7 @@ if __name__ == "__main__":
     # np.save(dname + "saved_input-outputs/linear_small_weights_16hidden_outputs.npy", outputs)
 
     # save the model weights
-    #torch.save(network.state_dict(), dname + "saved_weights/relu_small_weights_16hidden.pt")
+    #torch.save(network.state_dict(), dname + "saved_weights/linear_small_weights_16hidden.pt")
 
     # little plotty plot
     plt.plot(np.linspace(0, n_epochs, n_epochs), loss_history_train, label="train loss")

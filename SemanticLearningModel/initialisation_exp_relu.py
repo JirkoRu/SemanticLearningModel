@@ -6,10 +6,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from Semantic_learning import DatasetGenerator, CustomDataset, FullyConnected
+from Semantic_learning import DatasetGenerator, CustomDataset
+from Semantic_learning_relu import FullyConnected
 import os
 
-dname = os.getcwd() + "/linear_init_exp/"
+dname = os.getcwd() + "/relu_init_exp/"
 
 # task specific parameters
 n_examples = 4     # n_examples should be divisible by n_classes
@@ -132,20 +133,20 @@ if __name__ == "__main__":
                                                                     (100 * correct / len(train_set))))
 
         # save the input output matrices
-        np.save(dname + "saved_inputs-outputs/linear_small_weights_16hidden_inputs_lr_%s.npy" % std, inputs)
-        np.save(dname + "saved_inputs-outputs/linear_small_weights_16hidden_outputs_lr_%s.npy" % std, outputs)
+        np.save(dname + "saved_inputs-outputs/relu_small_weights_16hidden_inputs_lr_%s.npy" % std, inputs)
+        np.save(dname + "saved_inputs-outputs/relu_small_weights_16hidden_outputs_lr_%s.npy" % std, outputs)
 
         # save the model weights
-        torch.save(network.state_dict(), dname + "saved_weights/linear_small_weights_16hidden_lr_%s.pt" % std)
+        torch.save(network.state_dict(), dname + "saved_weights/relu_small_weights_16hidden_lr_%s.pt" % std)
 
         # save the loss history
-        np.save(dname + "saved_loss_hist/linear_small_weights_16hidden_inputs_lr_%s.npy" % std, np.array(loss_history_train))
+        np.save(dname + "saved_loss_hist/relu_small_weights_16hidden_inputs_lr_%s.npy" % std, np.array(loss_history_train))
 
         # little plotty plot
         plt.plot(np.linspace(0, n_epochs, n_epochs), loss_history_train, label="train loss")
         plt.xlabel("Epochs")
         plt.ylabel("Mean squared error")
         plt.legend()
-        plt.show(block=False)
-        # plt.savefig(dname + "figures/loss_semantic_learning_linear_16hidden.svg")
+        plt.show()
+        # plt.savefig(dname + "figures/loss_semantic_learning_relu_16hidden.svg")
 
