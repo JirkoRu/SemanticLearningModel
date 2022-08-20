@@ -9,12 +9,12 @@ import matplotlib
 import matplotlib.colors as colors
 
 
-dname = os.getcwd() + "/PycharmProjects/SemanticLearningModel/SemanticLearningModel/saved_input-outputs"
+dname = os.getcwd() + "/linear_init_exp/reduced_inputs-outputs_100/"
 
 fig_dname = os.getcwd() + "/PycharmProjects/SemanticLearningModel/SemanticLearningModel/"
 
-inputs = np.load(dname + "/relu_small_weights_16hidden_inputs.npy")
-outputs = np.load(dname + "/relu_small_weights_16hidden_outputs.npy")
+# inputs = np.load(dname + "/relu_small_weights_16hidden_inputs.npy")
+outputs = np.load(dname + "linear_small_weights_16hidden_outputs_lr_0.0001.npy")
 
 
 def sort_matrices(inputs, outputs):
@@ -34,10 +34,10 @@ def sort_matrices(inputs, outputs):
     
     return sorted_inputs, sorted_outputs
 
-sorted_inputs, sorted_outputs = sort_matrices(inputs, outputs)
+# sorted_inputs, sorted_outputs = sort_matrices(inputs, outputs)
 
-print(sorted_inputs[:,:,0])
-print(sorted_outputs[:,:,0])
+# print(sorted_inputs[:,:,0])
+# print(sorted_outputs[:,:,0])
 
 # def simulate_response(outputs):
 #     """ 
@@ -76,7 +76,7 @@ def plot_inout_matrix(in_out_matrix, fig_name, fig_title, unit_str, increment):
 
     # Average per bloc
     for i, ax in enumerate(axes.flatten()):
-        im = ax.matshow(in_out_matrix[:,:,i * increment].T, cmap=new_cmap, vmax = 1) 
+        im = ax.matshow(in_out_matrix[:,:,i * increment], cmap=new_cmap, vmax = 1) 
 
     # remove the ticks and make tick labels
     y_tick_labels = ['Derd','Lorp','Reng','Stad', 'Blap', 'Culp', 'Wost']
@@ -122,12 +122,12 @@ def plot_inout_matrix(in_out_matrix, fig_name, fig_title, unit_str, increment):
     # plt.tight_layout()
     plt.show()
     
-    fig.savefig(fig_name)
+    # fig.savefig(fig_name)
 
 
-plot_inout_matrix(sorted_outputs, 
+plot_inout_matrix(outputs, 
                   fig_dname + '/figures/in_out_matrix_network_relu_100.svg', 
-                  "Relu Network Input-Output Correlation Matrix by Epochs",
+                  "Linear Network Input-Output Correlation Matrix by Epochs",
                   "Epoch",
-                  100
+                  1
                 )

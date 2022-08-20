@@ -55,8 +55,8 @@ def sort_and_reduce(init_strings, m):
         reduced_inputs = sorted_inputs[:,:,::m]
 
         # change dim of outputs
-        reduced_outputs = np.swapaxes(sorted_outputs,0,1)
-        # print(type(save_file + init + ".npy"))
+        reduced_outputs = np.swapaxes(reduced_outputs,0,1)
+        print(reduced_outputs.shape)
         np.save(save_file + init + ".npy", reduced_outputs)
 
 if __name__ == "__main__":
