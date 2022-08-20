@@ -15,9 +15,7 @@ fig_dname = os.getcwd() + "/PycharmProjects/SemanticLearningModel/SemanticLearni
 
 inputs = np.load(dname + "/relu_small_weights_16hidden_inputs.npy")
 outputs = np.load(dname + "/relu_small_weights_16hidden_outputs.npy")
-print(inputs.shape)
-print(inputs[:,:,0])
-print(outputs[:,:,0])
+
 
 def sort_matrices(inputs, outputs):
     """ 
