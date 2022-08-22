@@ -13,7 +13,7 @@ dname_nn_input = os.getcwd() + "/linear_init_exp/saved_inputs-outputs/linear_sma
 dname_nn_output = os.getcwd() + "/linear_init_exp/saved_inputs-outputs/linear_small_weights_16hidden_outputs_lr_"
 
 # dir to save to
-save_file = os.getcwd() + "/linear_init_exp/reduced_inputs-outputs_100/linear_small_weights_16hidden_outputs_lr_"
+save_file = os.getcwd() + "/linear_init_exp/averaged_inputs-outputs/linear_small_weights_16hidden_outputs_lr_"
 
 def sort_matrices(inputs, outputs):
     """ 
@@ -35,12 +35,10 @@ def sort_matrices(inputs, outputs):
     return sorted_inputs, sorted_outputs
 
 def sort_and_reduce(init_strings, m):
-
     """
     sort n matrices using the sort_matrices functions, 
     remove randomisation imposed during training.
-    We only retain every mth input-ouput matrix produced during
-    training. 
+    we average m matrices.
     """
     for i, init in enumerate(init_strings):
         # load the data
@@ -59,6 +57,37 @@ def sort_and_reduce(init_strings, m):
         print(reduced_outputs.shape)
         np.save(save_file + init + ".npy", reduced_outputs)
 
+
+def sort_and_average(init_strings, m):
+
+    """
+    sort n matrices using the sort_matrices functions, 
+    remove randomisation imposed during training.
+    We only retain every mth input-ouput matrix produced during
+    training. 
+    """
+    for i, init in enumerate(init_strings):
+        # load the data
+        inputs = np.load(dname_nn_input + init + ".npy")
+        outputs = np.load(dname_nn_output + init + ".npy")
+
+        # sort the arrays
+        sorted_inputs, sorted_outputs = sort_matrices(inputs, outputs)
+        
+        # make empty array for averages
+        averaged_outputs = np.full((sorted_outputs.shape[0], 
+                                    sorted_outputs.shape[1], 
+                                    int(sorted_outputs.shape[2]/m)), np.nan)
+
+        # average m tensors at a time
+        for j in range(int(sorted_outputs.shape[2]/m)):
+            averaged_outputs[:,:,j] = np.mean(sorted_outputs[:,:,j*m:(j+1)*m], 2)
+            print(averaged_outputs[:,:,j])
+
+        # change dim of outputs
+        averaged_outputs = np.swapaxes(averaged_outputs,0,1)
+        np.save(save_file + init + ".npy", averaged_outputs)
+
 if __name__ == "__main__":
     init_strings = ["1", "0.1", "0.01", "0.001", "0.0001", "1e-05"]
-    sort_and_reduce(init_strings, 100)
+    sort_and_average(init_strings, 100)

@@ -9,7 +9,7 @@ import matplotlib
 import matplotlib.colors as colors
 
 
-dname = os.getcwd() + "/linear_init_exp/reduced_inputs-outputs_100/"
+dname = os.getcwd() + "/linear_init_exp/averaged_inputs-outputs/"
 
 fig_dname = os.getcwd() + "/PycharmProjects/SemanticLearningModel/SemanticLearningModel/"
 
@@ -126,7 +126,7 @@ def plot_inout_matrix(in_out_matrix, fig_name, fig_title, unit_str, increment):
 
 
 plot_inout_matrix(outputs, 
-                  fig_dname + '/figures/in_out_matrix_network_relu_100.svg', 
+                  fig_dname + '/figures/in_out_matrix_network_linear_100.svg', 
                   "Linear Network Input-Output Correlation Matrix by Epochs",
                   "Epoch",
                   1
