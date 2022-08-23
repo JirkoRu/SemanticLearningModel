@@ -1,6 +1,8 @@
-SemanticLearningModel/linear_init_exp/
-SemanticLearningModel/linear_init_exp48rep/
-SemanticLearningModel/relu_init_exp/
-SemanticLearningModel/relu_init_exp48rep/
-SemanticLearningModel/saved_input-outputs/
-SemanticLearningModel/saved_weights/
+**/linear_init_exp/
+**/linear_init_exp48rep/
+**/relu_init_exp/
+**/relu_init_exp48rep/
+**/saved_input-outputs/
+**/saved_weights/
+**/relu_sig_init_exp_48rep/
+**/linear_sig_init_exp_48rep/
