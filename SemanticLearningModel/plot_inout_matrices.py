@@ -13,7 +13,6 @@ dname = os.getcwd() + "/linear_init_exp/averaged_inputs-outputs/"
 
 fig_dname = os.getcwd() + "/PycharmProjects/SemanticLearningModel/SemanticLearningModel/"
 
-# inputs = np.load(dname + "/relu_small_weights_16hidden_inputs.npy")
 outputs = np.load(dname + "linear_small_weights_16hidden_outputs_lr_0.0001.npy")
 
 
@@ -84,7 +83,7 @@ def plot_inout_matrix(in_out_matrix, fig_name, fig_title, unit_str, increment):
 
     for i, ax in enumerate(axes.flatten()):
         
-        ax.set_title(unit_str + " " + str(i* increment+1), fontweight='bold', fontsize = 10)
+        ax.set_title(unit_str + " " + str((i+1)*100*increment), fontweight='bold', fontsize = 10)
 
         # make grid
         ax.set_xticks(np.arange(-.5, len(x_tick_labels)), minor=True)
@@ -120,14 +119,80 @@ def plot_inout_matrix(in_out_matrix, fig_name, fig_title, unit_str, increment):
     fig.colorbar(im, cax=cbar_ax)
 
     # plt.tight_layout()
-    plt.show()
+    # plt.show()
     
-    # fig.savefig(fig_name)
+    fig.savefig(fig_name)
+
+def plot_n_input_puts(input_dir_list, fig_dname_average, fig_dname_reduced, vars, titles, file_names):
+
+    # loop over the dirs
+    for i, model in enumerate(input_dir_list):
+        input_file_averaged = os.getcwd() + model + "/averaged_inputs-outputs_all_runs/"
+        input_file_reduced = os.getcwd() + model + "/reduced_inputs-outputs_all_runs/"
+
+        # loop over initialisations
+        for j in range(len(os.listdir(input_file_averaged))):
+
+            input_outputs = np.load(input_file_averaged + "lr_%s.npy" % (vars[j]))
+            
+            plot_inout_matrix(input_outputs, 
+                fig_dname_average + file_names[i] % (vars[j]), 
+                titles [i] % (vars[j]),
+                "Epoch",
+                1)
+
+        # loop over initialisations 
+        for k in range(len(os.listdir(input_file_reduced))):
+
+            input_outputs = np.load(input_file_reduced + "lr_%s.npy" % (vars[k]))
+
+            plot_inout_matrix(input_outputs, 
+                fig_dname_reduced + file_names[i] % (vars[k]), 
+                titles [i] % (vars[k]),
+                "Epoch",
+                1)
 
 
-plot_inout_matrix(outputs, 
-                  fig_dname + '/figures/in_out_matrix_network_linear_100.svg', 
-                  "Linear Network Input-Output Correlation Matrix by Epochs",
-                  "Epoch",
-                  1
-                )
+if __name__ == "__main__":
+    vars = ["1", "0.1", "0.01", "0.001", "0.0001", "1e-05"]
+
+    titles = ["Linear Network Input-Output Correlation Matrix by Epochs ($\mathbf{\sigma^2}$ = %s)",
+            "Sigmoid-Linear Network Input-Output Correlation Matrix by Epochs ($\mathbf{\sigma^2}$ = %s)",
+            "Relu Network Input-Output Correlation Matrix by Epochs ($\mathbf{\sigma^2}$ = %s)",
+            "Sigmoid-Relu Network Input-Output Correlation Matrix by Epochs ($\mathbf{\sigma^2}$ = %s)"
+            ]
+
+    file_names = ["linear_network_lr%s.png",
+                "linear_sig_network_lr%s.png",
+                "relu_network_lr%s.png",
+                "relu_sig_network_lr%s.png"]
+
+    # list of relevant network data
+    input_str_list = ["/linear_init_exp_48rep",
+                    "/linear_sig_init_exp_48rep",
+                    "/relu_init_exp_48rep",
+                    "/relu_sig_init_exp_48rep",
+                    ]
+
+    plot_n_input_puts(input_str_list, 
+                        os.getcwd() + "/figures_in_out_average_all_runs/png/", 
+                        os.getcwd() + "/figures_in_out_reduced_all_runs/png/", 
+                        vars, 
+                        titles, 
+                        file_names
+                        )
+
+    # lr = "1"
+    # lr2 = "1"
+    # dname = os.getcwd() + "/linear_init_exp_48rep/averaged_inputs-outputs_all_runs/"
+
+    # fig_dname = os.getcwd() + "/figures_in_out/png_figures/"
+
+    # outputs = np.load(dname + "lr_1.npy")
+
+    # plot_inout_matrix(outputs, 
+    #                 fig_dname + "linear_network_lr%s.png"% (lr), 
+    #                 "Linear Network Input-Output Correlation Matrix by Epochs ($\mathbf{\sigma^2}$ = %s)"% (lr2),
+    #                 "Epoch",
+    #                 1
+    #                 )
