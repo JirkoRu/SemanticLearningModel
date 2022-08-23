@@ -6,9 +6,9 @@ Scripts/
 __pycache__/
 
 **/linear_init_exp/
-**/linear_init_exp48rep/
+**/linear_init_exp_48rep/
 **/relu_init_exp/
-**/relu_init_exp48rep/
+**/relu_init_exp_48rep/
 **/saved_input-outputs/
 **/saved_weights/
 **/relu_sig_init_exp_48rep/
