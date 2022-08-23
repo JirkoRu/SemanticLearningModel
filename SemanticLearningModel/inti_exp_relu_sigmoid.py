@@ -7,10 +7,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from Semantic_learning import DatasetGenerator, CustomDataset
-from Semantic_learning_relu import FullyConnected
 import os
 
-dname = os.getcwd() + "/relu_init_exp_48rep/"
+dname = os.getcwd() + "/relu_sig_init_exp_48rep/"
 
 # task specific parameters
 n_examples = 4     # n_examples should be divisible by n_classes
@@ -29,6 +28,37 @@ learning_rate = 1/n_examples
 class_index_dict = {"a1_b1": (0, 1, 3), "a1_b2": (0, 1, 4),
                     "a2_c1": (0, 2, 5), "a2_c2": (0, 2, 6)
                     }
+
+# define our model class
+class FullyConnected(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(FullyConnected, self).__init__()
+        
+        # linear
+        self.fully_con1 = nn.Linear(input_size, hidden_size)
+        torch.nn.init.normal_(self.fully_con1.weight, mean=0, std=0.0001/input_size)
+        torch.nn.init.normal_(self.fully_con1.bias, mean=0, std=0.0001/input_size)
+
+        # relu        
+        self.relu = nn.ReLU()
+
+        # linear
+        self.fully_con2 = nn.Linear(hidden_size, output_size)
+        torch.nn.init.normal_(self.fully_con2.weight, mean=0, std=0.0001/output_size)
+        torch.nn.init.normal_(self.fully_con2.bias, mean=0, std=0.0001/output_size)
+
+        # sigmoid
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        x = self.fully_con1(x)
+        x = self.relu(x)
+        x = self.fully_con2(x)
+        out = self.sigmoid(x)
+        hidden_act = x
+        return hidden_act, out
+
+
 # lets make an additional function to initialise weights post hoc
 
 def initialize_weights(m):

@@ -59,12 +59,15 @@ def sort_and_reduce(init_strings, m):
 
 
 def sort_and_average(init_strings, m):
-
     """
     sort n matrices using the sort_matrices functions, 
     remove randomisation imposed during training.
     We only retain every mth input-ouput matrix produced during
     training. 
+
+    Args:
+        init_strings (_type_): _description_
+        m (_type_): _description_
     """
     for i, init in enumerate(init_strings):
         # load the data
