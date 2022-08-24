@@ -1,3 +1,4 @@
+from msilib import PID_TITLE
 import numpy as np
 import pandas as pd
 import re
@@ -8,6 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import matplotlib.colors as colors
 from scipy import stats
+# from sklearn.preprocessing import normalize
 
 """ 
 a script that allows us to calculate and plot CCs between humans and networks
@@ -24,22 +26,39 @@ human_dir = "C:/Users/Jirko/Desktop/Hip_Lab/analysis_scripts/data_loading/data_v
 # substrings to load each initialisation
 init_strings = ["1", "0.1", "0.01", "0.001", "0.0001", "1e-05"]
 
-def calculate_CCs(init_strings, human_dir, nn_dir):
-    """_summary_
+
+def cross_entropy(a, b, epsilon=1e-9):
+    """A function to calcuate the crosentropy
+    Args:
+        a (1D np array): Distribution a 
+        b (1D np array): Distribution b
+        epsilon (_type_, optional): constant for normalisation. Defaults to 1e-12.
+
+    Returns:
+        float: the crossentropy
+    """
+    a = np.clip(a, 1e-12, 1. - 1e-12)
+    b = np.clip(b, 1e-12, 1. - 1e-12)
+    # b = b + abs(np.min(b))
+    # b = np.exp(b)
+    a = a/np.sum(a)
+    b = b/np.sum(b)
+    ce = -np.dot(a, np.log(b+epsilon))
+    return ce
+
+
+def calculate_CEs(init_strings, human_dir, nn_dir):
+    """a function to calculate the CE
 
     Args:
         init_strings (_type_): _description_
         human_dir (_type_): _description_
         nn_dir (_type_): _description_
-
-    Returns:
-        _type_: _description_
     """
-
     # generate an empty dict of CCs for each initialisation
-    cc_dict = {}
+    ce_dict = {}
     # create an entry for our general CCs
-    cc_dict["overall"] = []
+    ce_dict["overall"] = []
 
     # load the human data
     human_data = np.load(human_dir)
@@ -53,23 +72,39 @@ def calculate_CCs(init_strings, human_dir, nn_dir):
 
         # calculate CC for each epoch and block and append to dict
         for epoch in range(human_data_resh.shape[1]):
-            res = stats.pearsonr(human_data_resh[:,epoch], model_data_resh[:, epoch])
-            if init not in cc_dict:
-                cc_dict[init] = []
-            cc_dict[init].append(res[0])
 
+            # normalise the data
+            # norm_human = human_data_resh[:,epoch]/np.sum(human_data_resh[:,epoch])
+            # norm_model = model_data_resh[:, epoch]/np.sum(model_data_resh[:, epoch])
+
+            # this is the result
+            res = cross_entropy(human_data_resh[:,epoch], model_data_resh[:, epoch])
+
+            # append to dict
+            if init not in ce_dict:
+                ce_dict[init] = []
+            ce_dict[init].append(res)
+        
+        # flatten the data
         human_data_flat = human_data_resh.reshape(224)
         model_data_flat = model_data_resh.reshape(224)
 
-        res_all = stats.pearsonr(human_data_flat, model_data_flat)
-        cc_dict["overall"].append(res_all[0])
+        # normalise
+        human_data_flat_norm = human_data_flat/np.sum(human_data_flat)
+        model_data_flat_norm = model_data_flat/np.sum(human_data_flat)
 
-    return cc_dict
+        # result for all
+        res_all = cross_entropy(model_data_flat_norm, human_data_flat_norm)
 
-cc_dict = calculate_CCs(init_strings, human_dir, nn_dir)
+        ce_dict["overall"].append(res_all)
+
+    return ce_dict
+
+ce_dict = calculate_CEs(init_strings, human_dir, nn_dir)
+# cc_dict = calculate_CCs(init_strings, human_dir, nn_dir)
 
 
-def plot_CCs(cc_dict, init_strings, title, save_path):
+def plot_CEs(cc_dict, init_strings, title, save_path):
     # markers = ['o', 'h', 'x', 'd', 'p', '^']
     blocks = np.arange(len(cc_dict["1"]))
     colors = plt.cm.Reds_r(np.linspace(.25,1,len(cc_dict["1"])))
@@ -98,10 +133,10 @@ def plot_CCs(cc_dict, init_strings, title, save_path):
     ax.set_xlabel("Block/Epoch", fontsize = 10)
 
     # y axis label
-    ax.set_ylabel("Correlation Coefficient (Pearson's r)", fontsize = 10)
+    ax.set_ylabel("Cross Entropy $H(Human, Network)$", fontsize = 10)
 
     # make the legend
-    ax.legend(title = 'variance $\sigma^2$', bbox_to_anchor=(0.95,0.6))
+    ax.legend(title = 'Variance $\sigma^2$', bbox_to_anchor=(0.95,0.6))
 
     # make the title
     ax.set_title(title, fontweight='bold', y=1.05)
@@ -110,16 +145,16 @@ def plot_CCs(cc_dict, init_strings, title, save_path):
     plt.show()
     # plt.savefig(save_path)
 
-plot_CCs(cc_dict, 
+plot_CEs(ce_dict, 
         init_strings,
-        "Human-Linear Network KLDs by Initialisation",
-        os.getcwd() + "/figures_correlations/Correlations_Relu_sig_averaged.png"
+        "Human-Linear(Sigmoid) Network CEs by Initialisation",
+        os.getcwd() + "/figures_crossentropy/clip/Linear_sig_averaged.png"
         )
 
 # "Human-Linear(Sigmoid) Network CCs by Initialisation"
 # "/figures_correlations/Correlations_linear_sig_averaged.svg"
 
-def plot_global_CCs(cc_list, init_strings, title, save_path):
+def plot_global_CEs(cc_list, init_strings, title, save_path):
     blocks = np.arange(len(cc_list))
 
     fig, ax = plt.subplots(1, 1, figsize=(6.5, 3.9), dpi=300, facecolor='w')
@@ -148,7 +183,7 @@ def plot_global_CCs(cc_list, init_strings, title, save_path):
     ax.set_xlabel("Initialisation Variance $\sigma^2$", fontsize = 10)
 
     # y axis label
-    ax.set_ylabel("Correlation Coefficient (Pearson's r)", fontsize = 10)
+    ax.set_ylabel("Cross Entropy $H(Human, Network)$", fontsize = 10)
 
     # make the title
     ax.set_title(title, fontweight='bold', y=1.05)
@@ -158,10 +193,10 @@ def plot_global_CCs(cc_list, init_strings, title, save_path):
     plt.show()
     # plt.savefig(save_path)
 
-plot_global_CCs(cc_dict["overall"], 
+plot_global_CEs(ce_dict["overall"], 
                 init_strings, 
-                "Overall Human-Linear Network KLDs by Initialisation",
-                os.getcwd() + "/figures_correlations/Correlations_relu_sig_overall_averaged.png")
+                "Overall Human-Linear(Sigmoid) Network CEs by Initialisation",
+                os.getcwd() + "/figures_crossentropy/clip/Linear_sig_overall_averaged.png")
 
 # "Overall Human-Linear(Sigmoid) Network CCs by Initialisation",
 # os.getcwd() + "/figures_correlations/Correlations_linear_sig_overall_averaged.svg")
