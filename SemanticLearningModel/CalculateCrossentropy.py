@@ -37,7 +37,7 @@ def cross_entropy(a, b, epsilon=1e-9):
     Returns:
         float: the crossentropy
     """
-    a = np.clip(a, 1e-12, 1. - 1e-12)
+    # a = np.clip(a, 1e-12, 1. - 1e-12)
     b = np.clip(b, 1e-12, 1. - 1e-12)
     # b = b + abs(np.min(b))
     # b = np.exp(b)
