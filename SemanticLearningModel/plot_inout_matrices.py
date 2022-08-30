@@ -83,7 +83,7 @@ def plot_inout_matrix(in_out_matrix, fig_name, fig_title, unit_str, increment):
 
     for i, ax in enumerate(axes.flatten()):
         
-        ax.set_title(unit_str + " " + str((i+1)*100*increment), fontweight='bold', fontsize = 10)
+        ax.set_title(unit_str + " " + str((i+1)*500*increment), fontweight='bold', fontsize = 10)
 
         # make grid
         ax.set_xticks(np.arange(-.5, len(x_tick_labels)), minor=True)
@@ -107,7 +107,7 @@ def plot_inout_matrix(in_out_matrix, fig_name, fig_title, unit_str, increment):
             ax.tick_params(labelleft=False, labeltop=False, labelbottom = True)
 
     # add a supertitle
-    fig.suptitle(fig_title, fontweight='bold', fontsize = 16)
+    fig.suptitle(fig_title, fontweight='bold', fontsize = 14)
 
     # add x labels
     fig.text(0.462, 0.07, 'Categories', fontweight='bold', fontsize = 12, ha='center')
@@ -156,27 +156,21 @@ def plot_n_input_puts(input_dir_list, fig_dname_average, fig_dname_reduced, vars
 if __name__ == "__main__":
     vars = ["1", "0.1", "0.01", "0.001", "0.0001", "1e-05"]
 
-    titles = ["Linear Network Input-Output Correlation Matrix by Epochs ($\mathbf{\sigma^2}$ = %s)",
-            "Sigmoid-Linear Network Input-Output Correlation Matrix by Epochs ($\mathbf{\sigma^2}$ = %s)",
-            "Relu Network Input-Output Correlation Matrix by Epochs ($\mathbf{\sigma^2}$ = %s)",
+    titles = ["Sigmoid-Linear Network Input-Output Correlation Matrix by Epochs ($\mathbf{\sigma^2}$ = %s)",
             "Sigmoid-Relu Network Input-Output Correlation Matrix by Epochs ($\mathbf{\sigma^2}$ = %s)"
             ]
 
-    file_names = ["linear_network_lr%s.png",
-                "linear_sig_network_lr%s.png",
-                "relu_network_lr%s.png",
+    file_names = ["linear_sig_network_lr%s.png",
                 "relu_sig_network_lr%s.png"]
 
     # list of relevant network data
-    input_str_list = ["/linear_init_exp_48rep",
-                    "/linear_sig_init_exp_48rep",
-                    "/relu_init_exp_48rep",
-                    "/relu_sig_init_exp_48rep",
+    input_str_list = ["/linear_sig_init_exp_48rep_2",
+                    "/relu_sig_init_exp_48rep_2",
                     ]
 
     plot_n_input_puts(input_str_list, 
-                        os.getcwd() + "/figures_in_out_average_all_runs/png/", 
-                        os.getcwd() + "/figures_in_out_reduced_all_runs/png/", 
+                        os.getcwd() + "/figures_in_out_average_all_runs_2/png/", 
+                        os.getcwd() + "/figures_in_out_reduced_all_runs_2/png/", 
                         vars, 
                         titles, 
                         file_names

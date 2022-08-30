@@ -153,28 +153,25 @@ def average_across_runs(load_dir, save_dir):
 if __name__ == "__main__":
 
     # dir to load from
-    # dname_nn_input = os.getcwd() + "/linear_init_exp_48rep/saved_inputs-outputs/"
-    # dname_nn_output = os.getcwd() + "/linear_init_exp_48rep/saved_inputs-outputs/"
+    # dname_nn_input = os.getcwd() + "/relu_sig_init_exp_48rep_2/saved_inputs-outputs/"
+    # dname_nn_output = os.getcwd() + "/relu_sig_init_exp_48rep_2/saved_inputs-outputs/"
+    # save_file_averaged = os.getcwd() + "/relu_sig_init_exp_48rep_2/averaged_inputs-outputs/"
+    # save_file_reduced = os.getcwd() + "/relu_sig_init_exp_48rep_2/reduced_inputs-outputs_100/"
+
+    # sort and reduce relevant files
+    # sort_and_reduce(dname_nn_input, dname_nn_output, save_file_reduced , 500)
+    # sort_and_average(dname_nn_input, dname_nn_output, save_file_averaged, 500)
 
     # list of relevant network data
-    input_str_list = ["/linear_init_exp_48rep",
-                    "/linear_sig_init_exp_48rep",
-                    "/relu_init_exp_48rep",
-                    "/relu_sig_init_exp_48rep"]
+    input_str_list = ["/linear_sig_init_exp_48rep_2",
+                    "/relu_sig_init_exp_48rep_2"]
 
     for dir in input_str_list: 
         # input files
         dname_nn_input = os.getcwd() + dir + "/saved_inputs-outputs/"
         dname_nn_output = os.getcwd() + dir + "/saved_inputs-outputs/"
-        
-        
         # dir to save to
         save_file_averaged = os.getcwd() + dir + "/averaged_inputs-outputs/"
         save_file_reduced = os.getcwd() + dir + "/reduced_inputs-outputs_100/"
-        # print(save_file_averaged)
-        # print(save_file_reduced)
         average_across_runs(save_file_averaged, os.getcwd() + dir + "/averaged_inputs-outputs_all_runs/")
         average_across_runs(save_file_reduced, os.getcwd() + dir + "/reduced_inputs-outputs_all_runs/")
-        # sort and reduce relevant files
-        # sort_and_reduce(dname_nn_input, dname_nn_output, save_file_reduced , 100)
-        # sort_and_average(dname_nn_input, dname_nn_output, save_file_averaged, 100)

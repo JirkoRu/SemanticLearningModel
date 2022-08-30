@@ -15,9 +15,9 @@ a script that allows us to calculate and plot CCs between humans and networks
 
 # path strings for loading the data
 # nn_dir = os.getcwd() + "/linear_init_exp_48rep/averaged_inputs-outputs_all_runs/lr_"
-# nn_dir = os.getcwd() + "/linear_sig_init_exp_48rep/averaged_inputs-outputs_all_runs/lr_"
+nn_dir = os.getcwd() + "/linear_sig_init_exp_48rep_2/averaged_inputs-outputs_all_runs/lr_"
 # nn_dir = os.getcwd() + "/relu_init_exp_48rep/averaged_inputs-outputs_all_runs/lr_"
-nn_dir = os.getcwd() + "/relu_sig_init_exp_48rep/averaged_inputs-outputs_all_runs/lr_"
+# nn_dir = os.getcwd() + "/relu_sig_init_exp_48rep_2/averaged_inputs-outputs_all_runs/lr_"
 
 human_dir = "C:/Users/Jirko/Desktop/Hip_Lab/analysis_scripts/data_loading/data_v2_quotes/in_out_matrix.npy"
 
@@ -107,13 +107,13 @@ def plot_EUs(eu_dict, init_strings, title, save_path):
     ax.set_title(title, fontweight='bold', y=1.05)
     # plt.subplots_adjust(bottom=0.15, left=.15, right=.15)
     plt.tight_layout()
-    # plt.show()
     plt.savefig(save_path)
+    plt.show()
 
 plot_EUs(eu_dict, 
         init_strings,
-        "Human-Relu(Sigmoid) Network Euclidean Distance",
-        os.getcwd() + "/figures_euclidean_dist/euclidean_relu_sig_averaged.png"
+        "Human-Linear(Sigmoid) Network Euclidean Distance",
+        os.getcwd() + "/figures_euclidean_dist_2/euclidean_linear_sig_averaged_2.png"
         )
 
 # "Human-Linear(Sigmoid) Network CCs by Initialisation"
@@ -155,13 +155,13 @@ def plot_global_EUs(eu_list, init_strings, title, save_path):
     
     plt.subplots_adjust(bottom=0.15, right=.9)
 
-    # plt.show()
     plt.savefig(save_path)
+    plt.show()
 
 plot_global_EUs(eu_dict["overall"], 
                 init_strings, 
-                "Overall Human-Relu(Sigmoid) Network Euclidean Distance",
-                os.getcwd() + "/figures_euclidean_dist/euclidean_relu_sig_overall_averaged.png")
+                "Overall Human-Linear(Sigmoid) Network Euclidean Distance",
+                os.getcwd() + "/figures_euclidean_dist_2/euclidean_linear_sig_overall_averaged_2.png")
 
 # "Overall Human-Linear(Sigmoid) Network CCs by Initialisation",
 # os.getcwd() + "/figures_correlations/Correlations_linear_sig_overall_averaged.svg")

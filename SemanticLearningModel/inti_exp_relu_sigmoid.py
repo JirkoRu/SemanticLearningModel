@@ -9,7 +9,7 @@ import torch.optim as optim
 from Semantic_learning import DatasetGenerator, CustomDataset
 import os
 
-dname = os.getcwd() + "/relu_sig_init_exp_48rep/"
+dname = os.getcwd() + "/relu_sig_init_exp_48rep_2/"
 
 # task specific parameters
 n_examples = 4     # n_examples should be divisible by n_classes
@@ -20,7 +20,7 @@ n_classes = 4
 input_size = n_classes
 hidden_size = 16
 output_size = n_features
-n_epochs = 800
+n_epochs = 4000
 batch_size = 4
 learning_rate = 1/n_examples
 
@@ -167,7 +167,15 @@ if __name__ == "__main__":
                 print("Epoch[{}/{}], Train Loss: {:.4f}, Accuracy: {} %".format(epoch + 1, n_epochs,
                                                                         epoch_train_loss,
                                                                         (100 * correct / len(train_set))))
+            # make dirs for saving
+            if not os.path.exists(dname + "saved_weights/lr_%s/" % (std)):
+                os.makedirs(dname + "saved_weights/lr_%s/" % (std))
+            
+            if not os.path.exists(dname + "saved_loss_hist/lr_%s/" % (std)):
+                os.makedirs(dname + "saved_loss_hist/lr_%s/" % (std))
 
+            if not os.path.exists(dname + "saved_inputs-outputs/lr_%s/" % (std)):
+                os.makedirs(dname + "saved_inputs-outputs/lr_%s/" % (std))
             # save the input output matrices
             np.save(dname + "saved_inputs-outputs/lr_%s/inputs_run_%s.npy" % (std, j), inputs)
             np.save(dname + "saved_inputs-outputs/lr_%s/outputs_run_%s.npy" % (std, j), outputs)
